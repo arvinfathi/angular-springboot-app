@@ -35,6 +35,7 @@ import java.util.List;
  *    - Spring Data automatically implements findAll(), save(), etc.
  *    - No SQL/MongoDB query code needed!
  */
+@CrossOrigin(origins = "${app.frontend.url}")
 @RestController // Marks this as a REST API controller that returns JSON
 @RequestMapping("/api/transactions") // Base path for all endpoints in this controller
 public class TransactionController {
