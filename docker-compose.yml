@@ -1,0 +1,171 @@
+# ============================================
+# DOCKER COMPOSE CONFIGURATION
+# ============================================
+#
+# This file defines the multi-container application architecture.
+# It orchestrates 3 services: MongoDB, Spring Boot Backend, and Angular Frontend.
+#
+# LEARNING POINTS:
+# ----------------
+#
+# 1. Services:
+#    - Each service is a separate Docker container
+#    - Services can communicate using service names (mongo, backend, frontend)
+#    - Docker creates an internal network for these containers
+#
+# 2. Port Mapping:
+#    - Format: "host_port:container_port"
+#    - Example: "8080:8080" maps container's 8080 to localhost:8080
+#
+# 3. depends_on:
+#    - Controls startup order
+#    - "depends_on: mongo" means start mongo before backend
+#    - NOTE: It doesn't wait for mongo to be "ready", just "started"
+#
+# 4. volumes:
+#    - Persist data between container restarts
+#    - Format: "volume_name:/container/path"
+#    - mongo-data volume stores MongoDB database files
+#
+# 5. environment:
+#    - Sets environment variables inside container
+#    - Used for configuration (passwords, connection strings, etc.)
+#
+# HOW TO USE:
+# -----------
+# docker-compose up -d     # Start all services in background
+# docker-compose down      # Stop and remove all containers
+# docker-compose logs -f   # View logs from all services
+# docker-compose ps        # List running containers
+
+services:
+  # ============================================
+  # SERVICE 1: MongoDB Database
+  # ============================================
+  # This is the data layer - stores all transactions
+  mongo:
+    # Docker image to use (MongoDB version 6.0 from Docker Hub)
+    image: mongo:6.0
+    
+    # Container name (easier to identify than random Docker-generated names)
+    container_name: finance-mongo
+    
+    # Port mapping: host:container
+    # Exposes MongoDB to localhost:27017 so DbGate and other tools can connect
+    ports:
+      - "27017:27017"
+    
+    # Data persistence
+    # Without this, all data is lost when container stops!
+    # mongo-data is defined at the bottom of this file
+    volumes:
+      - mongo-data:/data/db # /data/db is MongoDB's default data directory
+    
+    # Environment variables for MongoDB initialization
+    # These create the admin user when container first starts
+    environment:
+      # Create an admin user (required for authentication)
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+      
+      # Create this database on first startup
+      # (Not strictly necessary, MongoDB creates it automatically on first insert)
+      - MONGO_INITDB_DATABASE=finance-portal
+
+  # ============================================
+  # SERVICE 2: Spring Boot Backend (Java)
+  # ============================================
+  # This is the business logic layer - handles CRUD operations
+  backend:
+    # Build from local Dockerfile instead of pulling from Docker Hub
+    # ./backend is the build context (directory containing Dockerfile)
+    build: ./backend
+    
+    # Container name
+    container_name: finance-backend
+    
+    # Expose Spring Boot on localhost:8080
+    ports:
+      - "8080:8080"
+    
+    # Start mongo before backend
+    # Backend needs database to be running
+    depends_on:
+      - mongo # This is the service name, Docker resolves it to the container's IP
+    
+    # Environment variable for MongoDB connection
+    # This can override the value in application.properties
+    # Using environment variable makes it easier to change without rebuilding
+    environment:
+      - SPRING_MONGODB_URI=mongodb://admin:secret@mongo:27017/finance-portal?authSource=admin
+      # Note: 'mongo' here refers to the service name above, not 'localhost'!
+
+
+  # ============================================
+  # SERVICE 3: Angular Frontend (OPTIONAL)
+  # ============================================
+  # This is the presentation layer - serves the Angular web app
+  # NOTE: For development, you typically run Angular dev server locally (ng serve)
+  # This frontend service is for production deployment with nginx
+  frontend:
+    # Build from local Dockerfile in ./frontend directory
+    build: ./frontend
+    
+    # Container name
+    container_name: finance-frontend
+    
+    # Expose nginx on port 80 (standard HTTP port)
+    # Access the app at: http://localhost
+    ports:
+      - "80:80"
+    
+    # Start backend before frontend
+    # Frontend makes API calls to backend
+    depends_on:
+      - backend
+
+# ============================================
+# NAMED VOLUMES
+# ============================================
+# Volumes persist data between container restarts
+# Without this, all MongoDB data would be lost when you run 'docker-compose down'
+volumes:
+  # MongoDB data storage
+  # Docker stores this somewhere like: /var/lib/docker/volumes/
+  # To delete: docker volume rm angular-springboot-app_mongo-data
+  mongo-data:
+
+# ============================================
+# DOCKER COMMANDS CHEAT SHEET
+# ============================================
+#
+# BUILD AND START:
+# docker-compose up -d                    # Start all services (detached mode)
+# docker-compose up -d --build            # Rebuild images and start
+# docker-compose up -d --no-cache         # Force rebuild without cache
+#
+# STOP AND REMOVE:
+# docker-compose down                     # Stop and remove containers
+# docker-compose down -v                  # Also remove volumes (deletes data!)
+#
+# LOGS:
+# docker-compose logs -f                  # Follow logs from all services
+# docker-compose logs -f backend          # Follow logs from backend only
+# docker-compose logs --tail=100 mongo    # Last 100 lines from mongo
+#
+# RESTART:
+# docker-compose restart                  # Restart all services
+# docker-compose restart backend          # Restart backend only
+#
+# EXECUTE COMMANDS:
+# docker-compose exec backend sh          # Open shell in backend container
+# docker-compose exec mongo mongosh       # Open MongoDB shell
+#
+# INSPECT:
+# docker-compose ps                       # List running containers
+# docker-compose top                      # Display process information
+# docker-compose images                   # List images used by services
+#
+# CLEANUP:
+# docker system prune -a                  # Remove all unused containers, images, networks
+# docker volume prune                     # Remove all unused volumes
