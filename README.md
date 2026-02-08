@@ -1,6 +1,31 @@
-# Finance Portal - Learning Project
+<div align="center">
 
-> **A fullstack web application for learning Spring Boot + Angular + MongoDB**
+  <img src="cover.png" alt="Fullstack App Cover Image" width="100%" />
+
+  <br/>
+  <br/>
+
+  <img src="https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java" />
+  <img src="https://img.shields.io/badge/spring-%236DB33F.svg?style=for-the-badge&logo=spring&logoColor=white" alt="Spring Boot" />
+  <img src="https://img.shields.io/badge/angular-%23DD0031.svg?style=for-the-badge&logo=angular&logoColor=white" alt="Angular" />
+  <img src="https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB" />
+  <img src="https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
+  <img src="https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+  
+  <br/>
+
+  <img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="License" />
+  <img src="https://img.shields.io/badge/PRs-welcome-orange.svg?style=flat-square" alt="PRs Welcome" />
+
+  <h1>Angular + Spring Boot + MongoDB - Learning Project</h1>
+  
+  <p>
+    <b>A fullstack web application for learning Spring Boot + Angular + MongoDB</b>
+  </p>
+
+</div>
+
+---
 
 This project is designed as an educational resource for learning modern fullstack development with Java Spring Boot backend and Angular frontend.
 
