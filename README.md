@@ -84,7 +84,7 @@ angular-springboot-app/
 
 ```bash
 # Clone the repository
-git clone <your-repo-url>
+git clone https://github.com/arvinfathi/angular-springboot-app.git
 cd angular-springboot-app
 
 # Start all services (MongoDB + Backend + Frontend)
