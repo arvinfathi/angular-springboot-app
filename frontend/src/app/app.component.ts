@@ -41,6 +41,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root', // Used in index.html: <app-root></app-root>
@@ -193,7 +194,7 @@ export class AppComponent implements OnInit {
    * Angular dev server proxies /api/* requests to localhost:8080
    * (proxy configuration would be in proxy.conf.json if needed)
    */
-  private apiUrl = '/api/transactions';
+  private apiUrl = `${environment.apiUrl}/api/transactions`;
 
   /**
    * CONSTRUCTOR - DEPENDENCY INJECTION
